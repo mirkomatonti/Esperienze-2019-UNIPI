@@ -2,27 +2,27 @@
 #include "stdlib.h"
 #include "math.h"
 #include "interpolazione.h"
+//Algoritmo seguito : https://fac.ksu.edu.sa/sites/default/files/numerical_analysis_9th.pdf
 
 Point *spline(Point *interp_points,int n,double *eval_points,int n_evalpoints)
 {
 
     double h[n],l[n],z[n],u[n],A[n],c[n],b[n],d[n];
     
-
     for(int i= 0; i < n-1;i++)
          h[i] = interp_points[i + 1].x - interp_points[i].x;
-    
     
     
     for(int i= 1;i < n - 1;i++)
         A[i]=(3/h[i]) * (interp_points[i+1].y - interp_points[i].y ) - (3/h[i-1]) * (interp_points[i].y - interp_points[i-1].y );
      
-      
-    l[0]=1;  
+    //A[0,0]  
+    l[0]=1;
     u[0]=0;
+    //b[0]
     z[0]=0;
     
- 
+    //Lz=b
     for (int i = 1; i < n - 1; ++i) {
         l[i] = 2 * (interp_points[i + 1].x - interp_points[i - 1].x) - h[i - 1] * u[i - 1];
         u[i] = h[i] / l[i];
@@ -36,12 +36,14 @@ Point *spline(Point *interp_points,int n,double *eval_points,int n_evalpoints)
     c[n]=0;
     
 
+    // Uc = z e calcolo coeff b,d
     for (int j = n - 2; j >= 0; --j) {
         c[j] = z[j] - u[j] * c[j + 1];
         b[j] = (interp_points[j + 1].y - interp_points[j].y) / h[j] - h[j] * (c[j + 1] + 2 * c[j]) / 3;
         d[j] = (c[j + 1] - c[j]) / (3 * h[j]);
     }
 
+    //Valutazione punti
     Point *result = malloc(n_evalpoints * sizeof(Point));
     for(int i=0; i < n_evalpoints; i++)
     {

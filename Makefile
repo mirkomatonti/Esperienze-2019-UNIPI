@@ -1,9 +1,9 @@
 CC = gcc
-CFLAGS = -std=c99 -g -pedantic -Wall  -Wmissing-field-initializers -D_POSIX_C_SOURCE=200809L  -fsanitize=address -fno-omit-frame-pointer 
+CFLAGS = -std=c99 -g -pedantic -Wall  -Wmissing-field-initializers -D_POSIX_C_SOURCE=200809L
 OPTFLAGS = -lm
 .PHONY: clean 
 
-all:	libinterpolazione main 
+all:	libinterpolazione test 
 
 
 vandermonde:	src/vandermonde.c 
@@ -30,7 +30,7 @@ libinterpolazione:	vandermonde newton chebyshev lagrange spline points
 		@echo "Compilo Libreria"
 		ar rvs $@.a vandermonde.o newton.o chebyshev.o lagrange.o spline.o points.o
 		
-main:	src/main.c
+test:	src/test.c
 		@echo "Compilo eseugibile"
 		$(CC) $(CFLAGS) $< -o $@.out -L . -linterpolazione $(OPTFLAGS) 
 		

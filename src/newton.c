@@ -4,110 +4,56 @@
 #include "interpolazione.h"
 
 
-double product(Point *p, int i, int j)
+
+double ** divided_difference(Point * interp_points,int n)
 {
-    double res=1;
-    for (int k=0;k < j; k++)
-    {
-        res=res * (p[i].x - p[k].x);
-    }
-    return res;
-}
-
-
-double *newton(Point *points, int n)
-{
-    //output
-    double *coeffpolinomio= malloc(n * sizeof(double));
-    
-    //matrice A - Newton
-    double **a= (double **) malloc(n*sizeof(double *));
-
-    //Allocazione in memoria & prima riga 
+    double **mdd= (double **) malloc(n*sizeof(double *));
+   
+    //set prima colonna f(x0),f(x1).....f(xn-1)
     for (int i=0; i < n;i++)
     {
-        a[i] = (double *) malloc((n+1)*sizeof(double));
-        a[i][0] = 1;
+        mdd[i] = (double *) malloc((n+1)*sizeof(double));
+        mdd[i][0]=interp_points[i].y;
     }
     
-    //Costruzione matrice
-    for (int i=0; i < n ;i++)
-    {
-        int j;
-        for (j=1; j < i+1 ;j++)
-        {
-            
-            a[i][j] =product(points,i,j);
-        }
-        a[i][n] = points[i].y;
-    }
-    
-    //Stampa matrice  
-    printf("Matrice\n");
-    for(int i=0;i<n;i++)
-    {
-        int j;
-        for(j=0;j<i+1;j++)
-           {
-               printf("%lf ",a[i][j]);
-           }
-            printf("|%lf ",a[i][n]);
-            printf("\n");
-    }
-    
-
-    //risolvo sistema triangolare
-    for(int i = 0 ; i < n; i++)
-    {
-        coeffpolinomio[i]=a[i][n] / a[i][i];
-        for(int k = i + 1;k<n;k++)
-        {
-            a[k][n] -= a[k][i] * coeffpolinomio[i];
-        }
-    }
-    
-    return coeffpolinomio;
-    
-}
-
-
-//Calcolo della componente prod(x_j - x_i)
-double *prod(Point *points,int n,double x)
-{
-    double *den= malloc(n * sizeof(double));
-    for(int j=1; j < n; j++)
-    {
-        den[j]=1;
-        for(int i=0;i < j;i++)
-                den[j]*=(x-points[i].x);
+    //matrice delle differenze divise
+    for(int j=1; j < n;j++)
+        for (int k = 1;k <= j; k++)
+            mdd[j][k]= ((mdd[j][k-1] -  mdd[j-1][k-1]) / (interp_points[j].x -interp_points[j-k].x));
         
-    }
-    return den;
+   return mdd;
 }
 
 
-double eval(Point *interp_points,int n,double x,double * coeffpolinomio)
+//Valutazione polinomio in x con metodo di Horner
+double eval_point_newton(Point * interp_points,int n,double ** mdd,double x)
 {
-    double *coeff = prod(interp_points,n,x);
-    double sum = coeffpolinomio[0];
-    for (int i=0 ;i< n;i++)
-        sum+=coeffpolinomio[i] *coeff[i];
-    
-    free(coeff);
-    return sum;
+    double result = mdd[n-1][n-1];  
+  
+    for (int i=n-2; i>=0; i--) 
+        result = (result*(x - interp_points[i].x) + mdd[i][i]); 
+  
+    return result;
 }
 
-Point *eval_point_newton(Point *interp_points, int n, double *eval_points,int n_evalpoints)
+
+
+Point *newton(Point *interp_points, int n, double *eval_points,int n_evalpoints)
 {
-    double *coeffpolinomio = newton(interp_points,n);
+    double **mdd = divided_difference(interp_points,n);
     Point *result = malloc(n_evalpoints * sizeof(Point));
     for(int i=0; i < n_evalpoints; i++)
     {
         result[i].x = eval_points[i];
-        result[i].y = eval(interp_points,n,eval_points[i],coeffpolinomio);
+        result[i].y = eval_point_newton(interp_points,n,mdd,eval_points[i]);
         
     }
     
-    free(coeffpolinomio);
+    //pulizia
+    for (int i=0; i < n;i++)
+    {
+        free(mdd[i]);
+    }
+    free(mdd);
     return result;
 }

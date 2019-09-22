@@ -13,7 +13,7 @@ typedef struct{
 
 extern double *vandermonde(Point *points, int n);
 
-extern double *newton(Point *points, int n);
+extern Point *newton(Point *interp_points, int n, double *eval_points,int n_evalpoints);
 
 extern Point *lagrange(Point *interp_points, int n, double *eval_points,int n_evalpoints);
 
@@ -25,7 +25,6 @@ extern Point *gen_point(double (*fun)(double),int a,int b, int n);
 
 extern double *linspace(int a,int b, int n);
 
-extern Point *eval_point_newton(Point *interp_points, int n, double *eval_points,int n_evalpoints);
 
 
 

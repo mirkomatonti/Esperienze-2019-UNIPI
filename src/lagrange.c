@@ -20,18 +20,25 @@ double *denominatore(Point *points,int n)
     return den;
 }
 
+//Valutazione polinomio in x 
 double eval_point_lagrange(Point *interp_points, int n, double *den_coeff, double x)
 {
     double prod=1;
     double sum=0;
     
+    
     //Produttoria
     for(int i=0;i < n ; i++)
-        prod *= (x-interp_points[i].x);
+        {
+            if (x == interp_points[i].x)
+                return interp_points[i].y;
+            prod *= (x-interp_points[i].x);
+        }
     
     // Sommatoria
     for(int j=0;j < n;j++)
         sum += interp_points[j].y / (den_coeff[j] * (x - interp_points[j].x));
+        
         
     return sum * prod;
 }
