@@ -34,7 +34,7 @@ double *vandermonde(Point *points, int n)
         a[i][j] = points[i].y;
     }
     
-    for (int i=0;i < n;i++)
+    for (int i=0;i < n-1;i++)
     {
         //Cerco il massimo in questa colonna
         double maxE=abs(a[i][i]);
@@ -68,6 +68,8 @@ double *vandermonde(Point *points, int n)
                     a[k][j] += c * a[i][j];
             }
         }
+        
+    
     
       
     }
