@@ -96,15 +96,6 @@ int main()
     test(-5,5,5,100);
     test(-5,5,11,100);
     test(-5,5,15,100);
-    
-    /*
-    Point *testp = malloc(3 * sizeof(Point));
-    testp[0].x=0;testp[0].y=1;
-    testp[1].x=1;testp[1].y=M_E;
-    testp[2].x=2;testp[2].y=pow(M_E,2);
-    testp[2].x=3;testp[3].y=pow(M_E,3);
-    double *xi = linspace(0,3,4);
-    Point *int_spline = spline(testp,4,xi,4);
-    */
+
     return 0;
 } 
